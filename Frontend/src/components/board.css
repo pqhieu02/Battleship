@@ -1,0 +1,15 @@
+.Board {
+    display: inline-grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto auto;
+    border: 5px solid black;
+    width: 45%;
+    overflow: hidden;
+}
+
+.Leftboard {
+    float: left;
+}
+
+.Rightboard {
+    float: right;
+}

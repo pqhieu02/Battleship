@@ -1,0 +1,22 @@
+.popup {
+    position: fixed;
+    width: 30%;
+    height: 60%;
+    background-color: transparent;
+    animation: slideInDown 2s;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popupInner {
+    position: relative;
+    padding: 20px;
+    width: 100%;
+    min-height: 55%;
+    background-color: rgb(71, 252, 26, 0.9);
+
+    border-radius: 30px;
+    border: 5px solid black;
+}

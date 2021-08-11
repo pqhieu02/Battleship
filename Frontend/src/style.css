@@ -1,0 +1,224 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+}
+
+body {
+    background: url("http://lotofcolor.com/wp-content/uploads/2020/11/1920x1080.jpg")
+        no-repeat;
+    background-size: cover;
+    height: 100%;
+}
+
+@media (orientation: portrait) {
+    body {
+        background: url("https://wallpaperaccess.com/full/1155299.png")
+            no-repeat;
+    }
+}
+
+/* ---------------------------------------------------- Setup */
+#Home {
+    display: grid;
+    /* grid-template-areas: 
+        "name nav nav"
+        "play board board"
+        "play board board"
+        "play board board"
+    ; */
+    /* grid-template-areas: 
+    "nav nav name"
+    "board board play"
+    "board board play"
+    "board board play"
+    ; */
+    grid-template-areas:
+        "name name name"
+        "nav nav play"
+        "board board play";
+    grid-template-columns: 35% 35% 30%;
+    grid-template-rows: auto auto 550px;
+}
+
+#gameName {
+    grid-area: name;
+    font-size: 300%;
+    text-align: center;
+    margin: 20px;
+    font-weight: bold;
+    color: black;
+}
+
+#gameName > i {
+    color: black;
+}
+
+#nav {
+    grid-area: nav;
+    display: grid;
+    grid-template-areas: "How Info About";
+    /* justify-content: center; */
+    border: 2px solid black;
+    border-radius: 50px;
+    text-align: center;
+    margin: 20px;
+    font-size: 170%;
+    cursor: pointer;
+    opacity: 1;
+}
+
+#nav > i {
+    padding: 10px;
+    justify-items: center;
+}
+
+#nav > i:not(hover) {
+    opacity: 0.3;
+}
+
+#nav > i:hover {
+    opacity: 1;
+}
+
+#nav > i:first-child {
+    border-left: 0px solid black;
+}
+
+#nav > i:nth-child(n) {
+    border-right: 2px solid black;
+}
+
+#nav > i:last-child {
+    border: none;
+}
+
+#board {
+    grid-area: board;
+    background-color: lightblue;
+    padding-left: 50px;
+    padding-right: 50px;
+    margin: 10px;
+    text-align: justify;
+    font-size: 150%;
+    border: 3px solid black;
+    border-radius: 50px;
+}
+
+#board > h1 {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#play {
+    grid-area: play;
+    font-size: 150%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 10px;
+    padding: 50px;
+    border: 3px solid black;
+    border-radius: 50px;
+}
+
+#play > input {
+    margin-top: 20px;
+    border: none;
+    text-align: center;
+    height: 75px;
+    border-radius: 12px;
+    width: 100%;
+    font-size: 200%;
+}
+
+#play > button {
+    width: 100%;
+    height: 75px;
+    margin-top: 20px;
+    padding: 10px;
+    font-size: 50%;
+    background-color: orange;
+    font-weight: bold;
+    font-size: 150%;
+    border: 5px solid white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+#play > button:hover {
+    border: 5px solid black;
+}
+
+/* ---------------------------------------------------- Pregame & Ingame */
+
+#GameBar {
+    display: flex;
+    margin-bottom: 20px;
+    margin-top: 5px;
+    padding-right: 100px;
+    width: 100%;
+    height: 30%;
+}
+
+#GameBar > div {
+    text-align: center;
+    font-weight: bold;
+    align-self: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#tracker {
+    width: 9%;
+    margin: 4px;
+    border: 5px solid black;
+    border-radius: 50%;
+    background-color: lightblue;
+    font-size: 200%;
+}
+
+.playerNameContainer {
+    width: 45%;
+    border-radius: 20px;
+    font-size: 300%;
+    background-color: royalblue;
+    border: 5px solid orange;
+    transition: background-color 1s, border 1s;
+}
+
+.popupContainer {
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameOverPopup {
+    font-size: 200%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameOverPopup > button {
+    min-width: 30%;
+    min-height: 50%;
+    margin: 10px;
+    padding: 5px;
+    font-size: 80%;
+    font-weight: bold;
+    border: 5px solid black;
+    border-radius: 50px;
+    background: orange;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+#gameOverPopup > button:hover {
+    font-size: 130%;
+}
