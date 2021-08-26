@@ -1,76 +1,68 @@
 * {
     margin: 0px;
     padding: 0px;
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    box-sizing: border-box;
+    font-family: "Comic Sans MS", "Comic Sans";
+    box-sizing: border-box;
 }
 
 body {
+    height: 100vh;
     background: url("http://lotofcolor.com/wp-content/uploads/2020/11/1920x1080.jpg")
         no-repeat;
     background-size: cover;
-    height: 100%;
 }
 
-@media (orientation: portrait) {
-    body {
-        background: url("https://wallpaperaccess.com/full/1155299.png")
-            no-repeat;
-    }
+::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
 }
 
 /* ---------------------------------------------------- Setup */
+
+#screen {
+    display: initial;
+}
+
 #Home {
     display: grid;
-    /* grid-template-areas: 
-        "name nav nav"
-        "play board board"
-        "play board board"
-        "play board board"
-    ; */
-    /* grid-template-areas: 
-    "nav nav name"
-    "board board play"
-    "board board play"
-    "board board play"
-    ; */
+    height: 100%;
     grid-template-areas:
         "name name name"
         "nav nav play"
-        "board board play";
+        "infoBoard infoBoard play";
+
     grid-template-columns: 35% 35% 30%;
-    grid-template-rows: auto auto 550px;
+    grid-template-rows: auto auto 75%;
+    animation: fadeIn 1s forwards;
 }
 
 #gameName {
     grid-area: name;
-    font-size: 300%;
+    font-size: 10vh;
     text-align: center;
-    margin: 20px;
     font-weight: bold;
-    color: black;
-}
-
-#gameName > i {
     color: black;
 }
 
 #nav {
     grid-area: nav;
-    display: grid;
-    grid-template-areas: "How Info About";
-    /* justify-content: center; */
+    display: flex;
+    margin: 20px;
+    margin-bottom: 0px;
+    text-align: center;
+    font-size: 100%;
     border: 2px solid black;
     border-radius: 50px;
-    text-align: center;
-    margin: 20px;
-    font-size: 170%;
+    justify-content: space-around;
     cursor: pointer;
     opacity: 1;
+    word-wrap: break-word;
 }
 
 #nav > i {
-    padding: 10px;
-    justify-items: center;
+    margin-bottom: 0px;
+    font-size: 5vh;
 }
 
 #nav > i:not(hover) {
@@ -81,31 +73,20 @@ body {
     opacity: 1;
 }
 
-#nav > i:first-child {
-    border-left: 0px solid black;
-}
-
-#nav > i:nth-child(n) {
-    border-right: 2px solid black;
-}
-
-#nav > i:last-child {
-    border: none;
-}
-
-#board {
-    grid-area: board;
-    background-color: lightblue;
-    padding-left: 50px;
+#infoBoard {
+    grid-area: infoBoard;
+    margin: 20px;
     padding-right: 50px;
-    margin: 10px;
+    padding-left: 50px;
+    overflow: scroll;
+    background-color: lightblue;
     text-align: justify;
-    font-size: 150%;
+    font-size: 3vh;
     border: 3px solid black;
     border-radius: 50px;
 }
 
-#board > h1 {
+#infoBoard > h1 {
     text-align: center;
     margin-top: 10px;
     margin-bottom: 20px;
@@ -113,37 +94,39 @@ body {
 
 #play {
     grid-area: play;
-    font-size: 150%;
     display: flex;
+    margin: 20px;
+    padding: 30px;
+    font-size: 100%;
     flex-direction: column;
-    align-items: flex-start;
-    margin: 10px;
-    padding: 50px;
     border: 3px solid black;
-    border-radius: 50px;
+    border-radius: 30px;
+}
+
+#play > h1 {
+    text-align: center;
+    font-size: max(5vw, 5vh);
 }
 
 #play > input {
-    margin-top: 20px;
-    border: none;
-    text-align: center;
-    height: 75px;
-    border-radius: 12px;
     width: 100%;
-    font-size: 200%;
+    height: max(5vh, 5vw);
+    margin-top: 10px;
+    font-size: max(2vw, 3vh);
+    text-align: center;
+    border: none;
+    border-radius: 22px;
 }
 
 #play > button {
     width: 100%;
-    height: 75px;
+    height: max(5vh, 5vw);
     margin-top: 20px;
-    padding: 10px;
-    font-size: 50%;
-    background-color: orange;
     font-weight: bold;
-    font-size: 150%;
+    font-size: 3vh;
+    background-color: orange;
     border: 5px solid white;
-    border-radius: 12px;
+    border-radius: 20px;
     cursor: pointer;
     transition: 0.5s;
 }
@@ -154,39 +137,72 @@ body {
 
 /* ---------------------------------------------------- Pregame & Ingame */
 
-#GameBar {
+#gameContainer {
     display: flex;
-    margin-bottom: 20px;
-    margin-top: 5px;
-    padding-right: 100px;
+    height: 100%;
     width: 100%;
-    height: 30%;
+    flex-direction: column;
+    align-items: center;
+    animation: backInDown 1s;
 }
 
-#GameBar > div {
-    text-align: center;
-    font-weight: bold;
-    align-self: center;
-    padding-top: 20px;
-    padding-bottom: 20px;
-}
-
-#tracker {
-    width: 9%;
-    margin: 4px;
+.barContainer {
+    display: flex;
+    width: 50%;
+    height: 10%;
+    margin: 10px;
+    font-size: min(5vh, 5vw);
     border: 5px solid black;
-    border-radius: 50%;
-    background-color: lightblue;
-    font-size: 200%;
+    border-radius: 20px;
+    justify-content: center;
+    background-color: orangered;
 }
 
-.playerNameContainer {
-    width: 45%;
-    border-radius: 20px;
-    font-size: 300%;
+.barContainer > div {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.barContainer:nth-of-type(2) {
+    height: 12%;
     background-color: royalblue;
-    border: 5px solid orange;
-    transition: background-color 1s, border 1s;
+    font-weight: bold;
+}
+
+.barContainer:first-child > div:nth-of-type(2) {
+    border-left: 5px solid black;
+    border-right: 5px solid black;
+    background-color: greenyellow;
+    font-weight: bold;
+}
+
+.barContainer:nth-of-type(2) > div:nth-of-type(2) {
+    width: 70%;
+    border-left: 5px solid black;
+}
+
+#controlBtn {
+    width: 70%;
+    padding: 10px;
+    background-color: rgb(0, 255, 0);
+    font-size: min(4vh, 4vw);
+    font-weight: bold;
+    border: 5px solid black;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.boardContainer {
+    width: 50%;
+    height: 70%;
+    margin: 10px;
+}
+
+.cell {
+    border: 1px solid black;
 }
 
 .popupContainer {
@@ -197,28 +213,112 @@ body {
     align-items: center;
 }
 
-#gameOverPopup {
-    font-size: 200%;
+/* ---------------------------------------------------- Gameover */
+
+.popup {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    animation: zoomIn 1s;
+
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-#gameOverPopup > button {
-    min-width: 30%;
-    min-height: 50%;
-    margin: 10px;
-    padding: 5px;
-    font-size: 80%;
+.popupInner {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 20px;
+    width: 30%;
+    height: 40%;
+    background-color: rgb(0, 255, 0);
+
+    justify-content: center;
+    align-items: center;
+    border-radius: 30px;
+    border: 5px solid black;
+}
+
+.popupInner > h1 {
+    width: 100%;
+    /* height: 20%; */
+    text-align: center;
+    display: inline-block;
+    position: relative;
+    border-bottom: 5px solid black;
+    line-height: 0.1em;
+}
+
+.popupInner > h1 > span { 
+    background-color: rgb(0, 255, 0); 
+    padding:0 10px; 
+}
+
+.popupInner > p {
+    width: 100%;
+    margin: 25px;
+    text-align: center;
+    font-size: 200%;
+    font-weight: bold;
+}
+
+.popupInner > button {
+    width: 50%;
+    /* height: 100%; */
+    margin: 15px;
+    padding: 10px;
+    font-size: 200%;
     font-weight: bold;
     border: 5px solid black;
-    border-radius: 50px;
-    background: orange;
+    border-radius: 20px;
+    background-color: orange;
     cursor: pointer;
     transition: 0.5s;
 }
 
-#gameOverPopup > button:hover {
-    font-size: 130%;
+.popupInner > button:hover {
+    background-color: red;
+    color: white;
+}
+
+
+@media (orientation: portrait) {
+    body {
+        background: url("https://wallpaperaccess.com/full/1155299.png")
+            no-repeat;
+    }
+    #Home {
+        grid-template-areas:
+            "name"
+            "nav"
+            "infoBoard"
+            "play";
+        grid-template-columns: none;
+        grid-template-rows: 10% 10% 40% 40%;
+    }
+    #gameName {
+        font-size: 5vh;
+    }
+    .barContainer {
+        width: 100%;
+        height: 5%;
+    }
+
+    .barContainer:nth-of-type(2) {
+        height: 8%;
+        background-color: royalblue;
+    }
+
+    .boardContainer {
+        width: 100%;
+        height: 50%;
+    }
+    .popupInner {
+        width: 80%;
+        height: 40%;
+        font-size: 300%;
+    }
 }

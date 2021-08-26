@@ -7,7 +7,6 @@ function Cell({ x, y, side, color, cellOnClick }) {
         gridGap: "0px",
         margin: "0px",
         padding: "15px",
-        height: "2vw",
         backgroundColor: color,
         transition: "background-color 0.5s",
         cursor: "pointer",
@@ -37,10 +36,7 @@ function Board(props) {
     return (
         <>
             <div className="Board Leftboard">
-                <Draw {...props} side={"Left"} />
-            </div>
-            <div className="Board Rightboard">
-                <Draw {...props} side={"Right"} />
+                <Draw {...props}  />
             </div>
         </>
     );

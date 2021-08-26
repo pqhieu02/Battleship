@@ -7,7 +7,16 @@ import {
     setThisPlayerReady,
     setThisPlayerUnready,
 } from "./fetchAPI.js";
-import { WIDTH, HEIGHT, SHIPTOTAL, UNMARKED, SHIP, COLOR } from "constant";
+import {
+    WIDTH,
+    HEIGHT,
+    SHIPTOTAL,
+    UNMARKED,
+    SHIP,
+    COLOR,
+    INGAME,
+    FRIENDLY,
+} from "constant";
 
 export default function Pregame({
     changePhrase,
@@ -17,14 +26,13 @@ export default function Pregame({
 }) {
     const [playersName, setPlayersName] = useState({});
     const [myBoard, setMyBoard] = useState({
-        shipCount: SHIPTOTAL,
+        availableShipCount: SHIPTOTAL,
         map: Array(81).fill(UNMARKED),
     });
+    const [containerAnimation, setContainerAnimation] = useState();
 
-    const isReady = useRef(false);
+    const isThisPlayerReady = useRef(false);
     const cellClickable = useRef(true);
-    const trackerContent = useRef();
-    const trackerStyle = useRef();
 
     useEffect(() => {
         const requestPlayersName = async () => {
@@ -38,17 +46,16 @@ export default function Pregame({
         requestPlayersName();
     }, [roomId]);
 
-    const cellOnClick = (x, y, boardSide) => {
-        if (playerSide !== boardSide) {
-            console.log(`Your playboard is on the other side!`);
-            return;
-        }
+    const cellOnClick = (x, y) => {
         if (!cellClickable.current) return;
-        if (myBoard.shipCount > 0 && myBoard.map[y + x * 9] === UNMARKED) {
+        if (
+            myBoard.availableShipCount > 0 &&
+            myBoard.map[y + x * WIDTH] === UNMARKED
+        ) {
             updateMyMap(x, y, UNMARKED);
             return;
         }
-        if (myBoard.map[y + x * 9] === SHIP) {
+        if (myBoard.map[y + x * WIDTH] === SHIP) {
             updateMyMap(x, y, SHIP);
             return;
         }
@@ -56,98 +63,120 @@ export default function Pregame({
 
     const updateMyMap = (x, y, val) => {
         let myNewBoard = {
-            shipCount: myBoard.shipCount,
+            availableShipCount: myBoard.availableShipCount,
             map: myBoard.map,
         };
         if (val === UNMARKED) {
-            myNewBoard.shipCount--;
-            myNewBoard.map[y + x * 9] = SHIP;
-            console.log(`Location[${y + x * 9}] has been occupied`);
+            myNewBoard.availableShipCount--;
+            myNewBoard.map[y + x * WIDTH] = SHIP;
+            console.log(`Location[${y + x * WIDTH}] has been occupied`);
         }
         if (val === SHIP) {
-            myNewBoard.shipCount++;
-            myNewBoard.map[y + x * 9] = UNMARKED;
-            console.log(`Location[${y + x * 9}] has been unoccupied`);
+            myNewBoard.availableShipCount++;
+            myNewBoard.map[y + x * WIDTH] = UNMARKED;
+            console.log(`Location[${y + x * WIDTH}] has been unoccupied`);
         }
         setMyBoard(myNewBoard);
     };
 
-    const getCellColor = (x, y, boardSide) => {
-        if (playerSide !== boardSide) return COLOR[UNMARKED]["FRIENDLY"];
-        return COLOR[myBoard.map[y + x * 9]]["FRIENDLY"];
+    const getCellColor = (x, y) => {
+        return COLOR[myBoard.map[y + x * WIDTH]][FRIENDLY];
     };
 
-    const setReady = async (e) => {
-        if (myBoard.shipCount !== 0) {
+    const waitUntilEveryPlayerIsReady = async () => {
+        if (!isThisPlayerReady.current) {
+            console.log("Cancel ready");
             return;
         }
 
-        const waitUntilEveryPlayerIsReady = async () => {
-            let isEveryPlayerReady = await readyCheckRequest(roomId);
-            if (isEveryPlayerReady) {
-                changePhrase("Ingame");
-            } else {
-                if (!isReady.current) {
-                    console.log("Cancel ready");
-                    return;
-                }
-                console.log("Waiting");
-                setTimeout(waitUntilEveryPlayerIsReady, 500);
-            }
-        };
+        let { isEveryPlayerReady } = await readyCheckRequest(roomId);
+        if (isEveryPlayerReady) {
+            setContainerAnimation({
+                animation: "backOutDown 1s",
+                animationFillMode: "forwards",
+            });
+            setTimeout(() => changePhrase(INGAME), 1000);
+        } else {
+            console.log("Waiting");
+            setTimeout(waitUntilEveryPlayerIsReady, 500);
+        }
+    };
 
-        if (!isReady.current) {
+    const toggleReady = async (e) => {
+        if (myBoard.availableShipCount !== 0) {
+            return;
+        }
+        isThisPlayerReady.current = !isThisPlayerReady.current;
+        cellClickable.current = !cellClickable.current;
+        if (isThisPlayerReady.current) {
+            e.target.innerHTML = "Cancel";
+            e.target.style.color = "white";
+            e.target.style.backgroundColor = "rgb(255, 0, 0)";
             await setThisPlayerReady(roomId, playerId, myBoard.map);
-            e.target.style.backgroundColor = "rgb(0, 254, 0)";
-            cellClickable.current = false;
-            isReady.current = true;
             waitUntilEveryPlayerIsReady();
-            return;
         }
-        if (isReady.current) {
+        if (!isThisPlayerReady.current) {
+            e.target.innerHTML = "Ready";
+            e.target.style.color = "black";
+            e.target.style.backgroundColor = "rgb(0, 255, 0)";
             await setThisPlayerUnready(roomId, playerId);
-            e.target.style.backgroundColor = "";
-            isReady.current = false;
-            cellClickable.current = true;
-            return;
         }
     };
-
-    if (myBoard.shipCount === 0) {
-        trackerContent.current = "Ready";
-        trackerStyle.current = {
-            cursor: "pointer",
-            display: "inline-block",
-            animation: "tada 1s infinite",
-        };
-    } else {
-        trackerContent.current = myBoard.shipCount;
-        trackerStyle.current = {};
-    }
-
+    
     return (
         <>
-            <div id="GameBar">
-                <div className="playerNameContainer">
-                    <span>{playersName.Left}</span>
+            <div id="gameContainer" style={containerAnimation}>
+                <div className="barContainer">
+                    <div
+                        className="playerNameContainer"
+                        style={
+                            playerSide === "Left" ? { fontWeight: "bold" } : {}
+                        }
+                    >
+                        {playersName.Left}
+                    </div>
+                    <div className="tracker">VS</div>
+                    <div
+                        className="playerNameContainer"
+                        style={
+                            playerSide === "Right" ? { fontWeight: "bold" } : {}
+                        }
+                    >
+                        {playersName.Right}
+                    </div>
                 </div>
-                <div
-                    style={trackerStyle.current}
-                    id="tracker"
-                    onClick={(e) => setReady(e)}
-                >
-                    {trackerContent.current}
+                <div className="barContainer">
+                    <div id="notif">
+                        Remaining Ship: {myBoard.availableShipCount}
+                    </div>
+                    <div>
+                        <button
+                            id="controlBtn"
+                            onClick={toggleReady}
+                            style={
+                                myBoard.availableShipCount
+                                    ? {
+                                          backgroundColor: "gray",
+                                          cursor: "not-allowed",
+                                      }
+                                    : {}
+                            }
+                            disabled={myBoard.availableShipCount}
+                        >
+                            Ready
+                        </button>
+                    </div>
                 </div>
-                <div className="playerNameContainer">
-                    <span>{playersName.Right}</span>
+                <div className="boardContainer">
+                    <Board
+                        WIDTH={WIDTH}
+                        HEIGHT={HEIGHT}
+                        side={playerSide}
+                        cellOnClick={cellOnClick}
+                        getCellColor={getCellColor}
+                    />
                 </div>
             </div>
-            <Board
-                WIDTH={WIDTH}
-                HEIGHT={HEIGHT}
-                cellOnClick={cellOnClick}
-                getCellColor={getCellColor}
-            />
         </>
     );
 }

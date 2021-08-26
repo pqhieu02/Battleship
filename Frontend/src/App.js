@@ -2,34 +2,29 @@ import React, { useState, useRef } from "react";
 import Setup from "./Setup.js";
 import Pregame from "./Pregame.js";
 import Ingame from "./Ingame.js";
+import Gameover from "./Gameover.js";
 import "./style.css";
+import { GAMEOVER, HOME, INGAME, PREGAME } from "constant";
 
 function App() {
-    const [phrase, setPhrase] = useState("Setup");
+    const [phrase, setPhrase] = useState(HOME);
     const roomId = useRef();
     const playerId = useRef();
     const playerSide = useRef();
-    const playerName = useRef();
     const changePhrase = (newPhrase) => {
         setPhrase(newPhrase);
     };
 
-    const getPlayerInfor = (
-        newRoomId,
-        newPlayerId,
-        newPlayerSide,
-        newPlayerName
-    ) => {
+    const getPlayerInfor = (newRoomId, newPlayerId, newPlayerSide) => {
         roomId.current = newRoomId;
         playerId.current = newPlayerId;
         playerSide.current = newPlayerSide;
-        playerName.current = newPlayerName;
     };
 
-    if (phrase === "Setup") {
+    if (phrase === HOME) {
         roomId.current = "";
         playerId.current = "";
-        playerName.current = "";
+        playerSide.current = "";
         return (
             <Setup
                 getPlayerInfor={getPlayerInfor}
@@ -38,7 +33,7 @@ function App() {
         );
     }
 
-    if (phrase === "Pregame") {
+    if (phrase === PREGAME) {
         console.log("---------------------------------------------------");
         console.log("Pregame");
         console.log("---------------------------------------------------");
@@ -48,11 +43,11 @@ function App() {
                 roomId={roomId.current}
                 playerId={playerId.current}
                 playerSide={playerSide.current}
-                playerName={playerName.current}
             />
         );
     }
-    if (phrase === "Ingame") {
+
+    if (phrase === INGAME) {
         console.log("---------------------------------------------------");
         console.log("Ingame");
         console.log("---------------------------------------------------");
@@ -62,7 +57,17 @@ function App() {
                 roomId={roomId.current}
                 playerId={playerId.current}
                 playerSide={playerSide.current}
-                playerName={playerName.current}
+            />
+        );
+    }
+
+    if (phrase === GAMEOVER) {
+        return (
+            <Gameover
+                changePhrase={changePhrase}
+                roomId={roomId.current}
+                playerId={playerId.current}
+                playerSide={playerSide.current}
             />
         );
     }

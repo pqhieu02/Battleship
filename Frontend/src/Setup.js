@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { SHIPTOTAL } from "constant";
+import { PREGAME, SHIPTOTAL } from "constant";
 import { joinRoom, getRoomStatus, requestToLeaveRoom } from "./fetchAPI.js";
+import logo from "./logo.png";
 
 const howToPlay = (
     <>
@@ -40,57 +41,51 @@ const about = (
         <ul>
             <li>
                 <FontAwesomeIcon icon={["fas", "mobile-alt"]} />
-                <span>: (+358) 0468 855 502</span>
+                <span>: (+358) 468 855 502</span>
             </li>
             <li>
                 <FontAwesomeIcon icon={["fas", "envelope"]} />
                 <span>: quanghieu221002@gmail.com</span>
-            </li>
-            <li>
-                <FontAwesomeIcon icon={["fas", "globe"]} />
-                {/* <span>: <a>www.???.com</a></span> */}
             </li>
         </ul>
     </>
 );
 
 export default function Setup({ changePhrase, getPlayerInfor }) {
+    const [stage, setStage] = useState();
+    const [content, setContent] = useState(howToPlay);
+    const [animation, setAnimation] = useState();
+    const [playerName, setPlayerName] = useState("");
+
     const isInFindingGame = useRef(false);
     const roomId = useRef();
     const playerId = useRef();
     const playerSide = useRef();
-    const playerName = useRef();
 
-    const [stage, setStage] = useState("");
-    const [content, setContent] = useState(howToPlay);
-
-    const waitForGame = async (roomId, playerId, playerSide, playerName) => {
+    const waitForGame = async (roomId, playerId, playerSide) => {
         if (!isInFindingGame.current) return;
 
-        let roomStatus = await getRoomStatus(roomId);
-        if (roomStatus === "Pregame") {
-            getPlayerInfor(roomId, playerId, playerSide, playerName);
-            changePhrase("Pregame");
+        let { roomStatus } = await getRoomStatus(roomId);
+        if (roomStatus === PREGAME) {
+            getPlayerInfor(roomId, playerId, playerSide);
+            setAnimation({
+                animation: "fadeOut 1s forwards",
+            });
+            setTimeout(() => {
+                changePhrase(PREGAME);
+            }, 1000);
         } else {
             console.log("Matching");
-            setTimeout(
-                () => waitForGame(roomId, playerId, playerSide, playerName),
-                500
-            );
+            setTimeout(() => waitForGame(roomId, playerId, playerSide), 500);
         }
     };
 
     const find = async () => {
-        let roomResponse = await joinRoom(playerName.current);
-        roomId.current = roomResponse.roomId;
-        playerId.current = roomResponse.playerId;
-        playerSide.current = roomResponse.playerSide;
-        waitForGame(
-            roomResponse.roomId,
-            roomResponse.playerId,
-            roomResponse.playerSide,
-            roomResponse.playerName
-        );
+        let data = await joinRoom(playerName);
+        roomId.current = data.roomId;
+        playerId.current = data.playerId;
+        playerSide.current = data.playerSide;
+        waitForGame(data.roomId, data.playerId, data.playerSide);
     };
 
     const cancelFinding = async () => {
@@ -101,61 +96,71 @@ export default function Setup({ changePhrase, getPlayerInfor }) {
 
     const onClick = (e) => {
         if (stage !== "Matching") {
-            e.target.innerHTML = "Cancel";
             isInFindingGame.current = true;
             find();
             setStage("Matching");
         }
         if (stage === "Matching") {
-            e.target.innerHTML = "Find Game";
             isInFindingGame.current = false;
             cancelFinding();
             setStage("Setup");
         }
     };
 
+    const navOnFocusStyle = {
+        opacity: "1",
+    };
+
     return (
         <>
-            <div id="Home">
+            <div id="Home" style={animation}>
                 <h1 id="gameName">
                     <FontAwesomeIcon icon={["fas", "ship"]} />
                     Battleship
                     <FontAwesomeIcon icon={["fas", "ship"]} />
                 </h1>
-
                 <div id="nav">
                     <i
                         onClick={() => {
                             setContent(howToPlay);
                         }}
+                        style={content === howToPlay ? navOnFocusStyle : {}}
                     >
                         <FontAwesomeIcon icon={["fas", "book"]} />
-                    </i>
-
-                    <i>
-                        <FontAwesomeIcon icon={["fas", "info-circle"]} />
                     </i>
 
                     <i
                         onClick={() => {
                             setContent(about);
                         }}
+                        style={content === about ? navOnFocusStyle : {}}
                     >
                         <FontAwesomeIcon icon={["fas", "portrait"]} />
                     </i>
                 </div>
 
-                <div id="board">{content}</div>
+                <div id="infoBoard">{content}</div>
                 <div id="play">
-                    <h1>Let's Play</h1>
+                    <img src={logo} alt="logo"></img>
                     <input
                         type="text"
-                        placeholder="Your name"
+                        placeholder="Your name (1-10 chars)"
                         onChange={(e) => {
-                            playerName.current = e.target.value;
+                            setPlayerName(e.target.value);
                         }}
+                        maxLength={10}
                     ></input>
-                    <button onClick={onClick}>Find Game</button>
+                    <button
+                        onClick={onClick}
+                        style={
+                            playerName.length === 0
+                                ? { cursor: "not-allowed" }
+                                : {}
+                        }
+                        disabled={playerName.length === 0}
+                    >
+                        {stage === "Matching" ? "Cancel" : "Find Game"}
+                    </button>
                 </div>
             </div>
         </>

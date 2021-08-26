@@ -9,18 +9,28 @@ app.use(express.json());
 const Room = require("./Room.js");
 const Queue = require("./Queue.js");
 const uuid = require("uuid");
+const { TIME_EXECUTION, INGAME, PAUSED } = require("../Frontend/node_modules/constant/constant.js");
 
 let matchList = {};
 let waitingRooms = new Queue();
-let gameTurn = new Queue();
-gameTurn.enqueue("Left");
 
 app.post("/getPlayerName", (req, res) => {
     let { roomId, side } = req.body;
+    let match = matchList[roomId];
+    
     res.json({
-        playerName: matchList[roomId].getPlayerNameBySide(side),
+        playerName: match.getPlayerNameBySide(side),
     });
 });
+
+app.post("/getTimeStamp", (req, res) => {
+    let { roomId } = req.body;
+    let match = matchList[roomId];
+    
+    res.json({
+        timeStamp: match.timeStamp,
+    })
+})
 
 // -------------------------------------------------------- Setup Stage
 
@@ -41,11 +51,9 @@ app.post("/joinRoom", (req, res) => {
         roomId: roomId,
         playerId: playerId,
         playerSide: playerSide,
-        playerName: playerName,
     });
 });
 
-//long polling here
 app.post("/getRoomStatus", (req, res) => {
     let { roomId } = req.body;
     res.json({
@@ -55,14 +63,9 @@ app.post("/getRoomStatus", (req, res) => {
 
 app.post("/Cancel", (req, res) => {
     let { roomId, playerId } = req.body;
-    let newRoom = [];
+    let match = matchList[roomId];
 
-    matchList[roomId].players.forEach((player) => {
-        if (playerId !== player.id) {
-            newRoom.push(player);
-        }
-    });
-    matchList[roomId].players = [...newRoom];
+    match.removePlayerById(playerId);
     if (matchList[roomId].players.length === 0) {
         waitingRooms.remove(roomId);
         delete matchList[roomId];
@@ -73,12 +76,12 @@ app.post("/Cancel", (req, res) => {
     });
 });
 
-// cancel function need to
-
 //-------------------------------------------------------- Pregame Stage
 app.post("/setReady", (req, res) => {
     let { roomId, playerId, map } = req.body;
-    matchList[roomId].players.forEach((player) => {
+    let match = matchList[roomId];
+
+    match.players.forEach((player) => {
         if (player.id === playerId) {
             player.map = map;
             player.status = "Ready";
@@ -89,21 +92,23 @@ app.post("/setReady", (req, res) => {
 
 app.post("/setUnready", (req, res) => {
     let { roomId, playerId } = req.body;
-    matchList[roomId].players.forEach((player) => {
+    let match = matchList[roomId];
+
+    match.players.forEach((player) => {
         if (player.id === playerId) {
             player.map = [];
-            player.status = "Waiting";
+            player.status = "Unready";
         }
     });
     res.json();
 });
 
-//longpolling here
 app.post("/readyCheck", (req, res) => {
     let roomId = req.body.roomId;
+    let match = matchList[roomId];
     let isEveryPlayerReady = true;
 
-    matchList[roomId].players.forEach((player) => {
+    match.players.forEach((player) => {
         if (player.status !== "Ready") {
             isEveryPlayerReady = false;
         }
@@ -117,55 +122,123 @@ app.post("/readyCheck", (req, res) => {
 //-------------------------------------------------------- Ingame Stage
 
 app.post("/getGameTurn", (req, res) => {
-    let { roomId, playerId } = req.body;
-    let myShipRemain;
-    let enemyShipRemain;
+    let { roomId } = req.body;
+    let match = matchList[roomId];
 
-    matchList[roomId].turn = gameTurn.first();
-    if (gameTurn.size > 1 && playerId !== gameTurn.first()) {
-        gameTurn.dequeue();
-    }
-
-    matchList[roomId].players.forEach((player) => {
-        if (player.id === playerId) {
-            myShipRemain = player.undestroyedShipCount;
-        } else {
-            enemyShipRemain = player.undestroyedShipCount;
+    match.players.forEach((player) => {
+        if (player.timeStamp !== match.timeStamp) {
+            player.timeStamp++;
+            match.turn = match.turn === "Left" ? "Right" : "Left";
         }
     });
 
     res.json({
-        turn: matchList[roomId].turn,
-        myShipRemain: myShipRemain,
-        enemyShipRemain: enemyShipRemain,
+        turn: match.turn,
+        gameTimer: match.gameTimer,
     });
 });
 
+app.post("/getGameTimerAndStatus", (req, res) => {
+    let { roomId } = req.body;
+    let match = matchList[roomId];
+
+    res.json({
+        gameTimer: match.gameTimer,
+        roomStatus: match.roomStatus,
+    })
+})
+
+app.post("/stopTimer", (req, res) => {
+    let { roomId } = req.body;
+    let match = matchList[roomId];
+
+    match.stopTimer();
+
+    res.json()
+})
+
+app.post("/startNewTimer", (req, res) => {
+    let { roomId } = req.body;
+    let match = matchList[roomId];
+
+    if (!match.timerItvId) { 
+        match.resetTimer();
+        match.startTimer();
+    }
+
+    res.json()
+})
+
+app.post("/controlGameTimer", (req, res) => {
+    let { roomId, playerId} = req.body;
+    let match = matchList[roomId];
+
+    match.players.forEach((player) => {
+        if (player.id === playerId) {
+            match.roomStatus = match.roomStatus === INGAME ? PAUSED : INGAME;
+            if (match.roomStatus === PAUSED) {
+                match.stopTimer();
+            } 
+            if (match.roomStatus === INGAME) {
+                match.startTimer();
+            }
+        }
+    })
+
+    res.json();
+})
+
 app.post("/getMyMap", (req, res) => {
     let { roomId, playerId } = req.body;
+    let match = matchList[roomId];
+    let remains;
     let map;
 
-    matchList[roomId].players.forEach((player) => {
+    match.players.forEach((player) => {
         if (player.id === playerId) {
+            remains = player.undestroyedShipCount;
             map = player.map;
         }
     });
+
     res.json({
         map: map,
+        remains: remains,
     });
 });
 
 app.post("/revealCell", (req, res) => {
     let { roomId, playerId, x, y } = req.body;
-    let newTurn = matchList[roomId].turn === "Left" ? "Right" : "Left";
+    let match = matchList[roomId];
 
-    gameTurn.enqueue(newTurn);
-    let cell = matchList[roomId].revealThisLocation(x, y, playerId);
+    match.timeStamp++;
+    let cell = match.revealThisLocation(x, y, playerId);
 
     res.json({
         cell: cell,
     });
 });
+
+app.post("/setGameWinner", (req, res) => {
+    let { roomId, winnerSide } = req.body;
+    let match = matchList[roomId];
+
+    match.stopTimer();
+    match.roomStatus = winnerSide;
+
+    res.json();
+})
+
+app.post("/getWinnerName", (req, res) => {
+    let { roomId } = req.body;
+    let match = matchList[roomId];
+
+    let playerName = match.getPlayerNameBySide(match.roomStatus);
+
+    res.json({
+        playerName: playerName,
+    })
+})
 
 //------------------------------------------------------------------------------
 app.listen(PORT, () => {
