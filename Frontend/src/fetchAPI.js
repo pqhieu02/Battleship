@@ -1,5 +1,5 @@
 // const BASE_URL = "http://localhost:8080";
-const BASE_URL = "https://battleship.backend.quangnau.com/";
+const BASE_URL = "https://battleship.backend.quangnau.com";
 
 export async function joinRoom(playerName) {
     let res = await fetch(BASE_URL + "/joinRoom", {
