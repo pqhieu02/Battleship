@@ -1,5 +1,5 @@
 // const BASE_URL = "http://localhost:8080";
-const BASE_URL = "http://battleshipbackend-env.eba-fysqfqfq.us-east-2.elasticbeanstalk.com";
+const BASE_URL = "https://battleship.backend.quangnau.com/";
 
 export async function joinRoom(playerName) {
     let res = await fetch(BASE_URL + "/joinRoom", {
@@ -153,8 +153,8 @@ export async function getTimeStamp(roomId) {
         },
         body: JSON.stringify({
             roomId: roomId,
-        })
-    })
+        }),
+    });
     let { timeStamp } = await res.json();
     return { timeStamp };
 }
@@ -167,8 +167,8 @@ export async function getGameTimerAndStatus(roomId) {
         },
         body: JSON.stringify({
             roomId: roomId,
-        })
-    })
+        }),
+    });
     let { gameTimer, roomStatus } = await res.json();
     return { gameTimer, roomStatus };
 }
@@ -181,8 +181,8 @@ export async function stopTimer(roomId) {
         },
         body: JSON.stringify({
             roomId: roomId,
-        })
-    })
+        }),
+    });
 }
 
 export async function resumeTimer(roomId) {
@@ -193,8 +193,8 @@ export async function resumeTimer(roomId) {
         },
         body: JSON.stringify({
             roomId: roomId,
-        })
-    })
+        }),
+    });
 }
 
 export async function startNewTimer(roomId) {
@@ -205,8 +205,8 @@ export async function startNewTimer(roomId) {
         },
         body: JSON.stringify({
             roomId: roomId,
-        })
-    })
+        }),
+    });
 }
 
 export async function setGameWinner(roomId, winnerSide) {
@@ -218,8 +218,8 @@ export async function setGameWinner(roomId, winnerSide) {
         body: JSON.stringify({
             roomId: roomId,
             winnerSide: winnerSide,
-        })
-    })
+        }),
+    });
 }
 
 export async function controlGameTimer(roomId, playerId) {
@@ -231,8 +231,8 @@ export async function controlGameTimer(roomId, playerId) {
         body: JSON.stringify({
             roomId: roomId,
             playerId: playerId,
-        })
-    })
+        }),
+    });
 }
 
 export async function getWinnerName(roomId) {
@@ -243,8 +243,8 @@ export async function getWinnerName(roomId) {
         },
         body: JSON.stringify({
             roomId: roomId,
-        })
-    })
+        }),
+    });
     let { playerName } = await res.json();
     return { playerName };
 }
