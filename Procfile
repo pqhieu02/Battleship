@@ -1,1 +1,1 @@
-web: ls && ls shared && cd Backend && npm start
+web: cd Backend && npm install && npm start
