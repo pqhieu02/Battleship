@@ -9,7 +9,7 @@ app.use(express.json());
 const Room = require("./Room.js");
 const Queue = require("./Queue.js");
 const uuid = require("uuid");
-const { INGAME, PAUSED } = require("../Frontend/node_modules/constant/constant.js");
+const { INGAME, PAUSED } = require("constant");
 
 let matchList = {};
 let waitingRooms = new Queue();
