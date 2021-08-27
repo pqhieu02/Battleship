@@ -1,4 +1,5 @@
-import { BASE_URL } from "constant";
+// const BASE_URL = "http://localhost:8080";
+const BASE_URL = "http://battleshipbackend-env.eba-fysqfqfq.us-east-2.elasticbeanstalk.com";
 
 export async function joinRoom(playerName) {
     let res = await fetch(BASE_URL + "/joinRoom", {

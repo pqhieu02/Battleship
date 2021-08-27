@@ -36,6 +36,3 @@ module.exports.COLOR = {
         ENEMY: "red",
     },
 };
-
-// module.exports.BASE_URL = "https://backend-battleship.quangnau.com";
-module.exports.BASE_URL = "http://localhost:443";
