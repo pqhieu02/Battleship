@@ -10,9 +10,11 @@ module.exports.PREGAME = "PREGAME";
 module.exports.INGAME = "INGAME";
 module.exports.PAUSED = "PAUSED";
 module.exports.GAMEOVER = "GAMEOVER";
+
 module.exports.WIDTH = 9;
 module.exports.HEIGHT = 9;
-module.exports.SHIPTOTAL = 1;
+module.exports.SHIPTOTAL = 10;
+
 module.exports.UNMARKED = -1;
 module.exports.WATER = 0;
 module.exports.SHIP = 1;

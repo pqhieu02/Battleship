@@ -3,49 +3,40 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { PREGAME, SHIPTOTAL } from "constant";
 import { joinRoom, getRoomStatus, requestToLeaveRoom } from "./fetchAPI.js";
-import logo from "./logo.png";
+import logo from "./image/logo.png";
 
 const howToPlay = (
     <>
-        <h1>How to Play</h1>
         <ul>
             <li>
                 The object of this game is to try and sink all of the other
-                player's ship before they sink all of your ships. All of the
+                player's ships before they sink all of your ships. All of the
                 other player's ships are somewhere on his/her board.
             </li>
             <br />
-
             <li>
-                You try and hit them by calling out the coordinates of one of
-                the squares on the board. The other player also tries to hit
-                your ships by calling out coordinates. Neither you nor the other
-                player can see the other's board so you must try to guess where
-                they are.
+                In the beginning, each player has {SHIPTOTAL} ships. To set up
+                the board, you need to click on any unoccupied square to place a
+                ship. No ships may be placed on another ship.
             </li>
             <br />
-
             <li>
-                Each player places the {SHIPTOTAL} ships somewhere on their
-                board. No ships may be placed on another ship. Once the guessing
-                begins, the players may not move the ships. As soon as all of
-                one player's ships have been sunk, the game ends.
+                There are 4 colors to indicate a square on a board:{" "}
+                <span style={{ color: "white" }}>white</span> is an unoccupied
+                square, <span style={{ color: "lightblue" }}>lightblue</span> is
+                one of your ships, a <span style={{ color: "gray" }}>gray</span>{" "}
+                square is one of your destroyed ships and a{" "}
+                <span style={{ color: "red" }}>red</span> square is one of your
+                opponent's destroyed ships.
             </li>
             <br />
-        </ul>
-    </>
-);
-const about = (
-    <>
-        <h1>Hieu Pham</h1>
-        <ul>
             <li>
-                <FontAwesomeIcon icon={["fas", "mobile-alt"]} />
-                <span>: (+358) 468 855 502</span>
-            </li>
-            <li>
-                <FontAwesomeIcon icon={["fas", "envelope"]} />
-                <span>: quanghieu221002@gmail.com</span>
+                Once the game begins, the players may not move the ships and
+                have to attack your opponent's board before the timer expires.
+                Your opponent also tries to attack your board before the timer
+                expires. Neither you nor the other player can see the other's
+                board so you must try to guess where the ships are. As soon as
+                all of one player's ships have been sunk, the game ends.
             </li>
         </ul>
     </>
@@ -53,7 +44,6 @@ const about = (
 
 export default function Setup({ changePhrase, getPlayerInfor }) {
     const [stage, setStage] = useState();
-    const [content, setContent] = useState(howToPlay);
     const [animation, setAnimation] = useState();
     const [playerName, setPlayerName] = useState("");
 
@@ -107,10 +97,6 @@ export default function Setup({ changePhrase, getPlayerInfor }) {
         }
     };
 
-    const navOnFocusStyle = {
-        opacity: "1",
-    };
-
     return (
         <>
             <div id="Home" style={animation}>
@@ -119,27 +105,9 @@ export default function Setup({ changePhrase, getPlayerInfor }) {
                     Battleship
                     <FontAwesomeIcon icon={["fas", "ship"]} />
                 </h1>
-                <div id="nav">
-                    <i
-                        onClick={() => {
-                            setContent(howToPlay);
-                        }}
-                        style={content === howToPlay ? navOnFocusStyle : {}}
-                    >
-                        <FontAwesomeIcon icon={["fas", "book"]} />
-                    </i>
+                <div id="how">HOW TO PLAY</div>
 
-                    <i
-                        onClick={() => {
-                            setContent(about);
-                        }}
-                        style={content === about ? navOnFocusStyle : {}}
-                    >
-                        <FontAwesomeIcon icon={["fas", "portrait"]} />
-                    </i>
-                </div>
-
-                <div id="infoBoard">{content}</div>
+                <div id="infoBoard">{howToPlay}</div>
                 <div id="play">
                     <img src={logo} alt="logo"></img>
                     <input
@@ -161,6 +129,38 @@ export default function Setup({ changePhrase, getPlayerInfor }) {
                     >
                         {stage === "Matching" ? "Cancel" : "Find Game"}
                     </button>
+                </div>
+                <div id="footer">
+                    <div id = "contactsText">
+                        <div>
+                            <span>
+                                <FontAwesomeIcon icon={["fas", "phone-alt"]} />
+                            </span>
+                            <span>+358 468 855 503</span>
+                        </div>
+                        <div>
+                            <span>
+                                <FontAwesomeIcon icon={["fas", "envelope"]} />
+                            </span>
+                            <span>quanghieu221002@gmail.com</span>
+                        </div>
+                    </div>
+                    <div id = "contactsLink">
+                        <a
+                            href="https://www.facebook.com/"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <FontAwesomeIcon icon={["fab", "facebook"]} />
+                        </a>
+                        <a
+                            href="https://github.com/pqhieu02"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <FontAwesomeIcon icon={["fab", "github"]} />
+                        </a>
+                    </div>
                 </div>
             </div>
         </>

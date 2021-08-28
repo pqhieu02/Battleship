@@ -109,8 +109,8 @@ export async function getGameTurn(roomId, playerId) {
             playerId: playerId,
         }),
     });
-    let { turn, gameTimer } = await res.json();
-    return { turn, gameTimer };
+    let { turn } = await res.json();
+    return { turn };
 }
 
 export async function getMyMap(roomId, playerId) {

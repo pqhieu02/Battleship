@@ -105,7 +105,7 @@ class Room {
     startTimer() {
         this.roomStatus = constant.INGAME;
         let itv = setInterval(() => {
-            this.gameTimer--;
+            this.gameTimer = Math.max(--this.gameTimer, 0);
         }, 1000);
         this.timerItvId = itv;
     }

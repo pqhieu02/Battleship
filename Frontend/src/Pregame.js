@@ -147,7 +147,7 @@ export default function Pregame({
                 </div>
                 <div className="barContainer">
                     <div id="notif">
-                        Remaining Ship: {myBoard.availableShipCount}
+                        You have {myBoard.availableShipCount} ship to place on an unoccupied square.
                     </div>
                     <div>
                         <button

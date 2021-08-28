@@ -75,16 +75,16 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
     useEffect(() => {
         const updateGameTimerAndStatus = async () => {
             let { gameTimer, roomStatus } = await getGameTimerAndStatus(roomId);
-            if (gameTimer < 0) {
+            if (gameTimer === 0) {
                 annouceGameWinner(
                     currentGameTurn === "Left" ? "Right" : "Left"
                 );
                 setContainersAnimation({
                     gameContainer: {
                         animation: "backOutDown 1s forwards",
-                    }
-                })
-                setTimeout(() => changePhrase(GAMEOVER), 1000)
+                    },
+                });
+                setTimeout(() => changePhrase(GAMEOVER), 1000);
             }
             setTimer(gameTimer);
             setInGameStatus(roomStatus);
@@ -92,7 +92,7 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
         };
 
         updateGameTimerAndStatus();
-        let itv = setInterval(updateGameTimerAndStatus, 1000);
+        let itv = setInterval(updateGameTimerAndStatus, 200);
 
         return () => clearInterval(itv);
     }, [playerId, roomId]);
@@ -112,9 +112,10 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
         requestToStopTimer();
         updateMyMap().then(() => {
             if (myShipRemain.current === 0 || enemyShipRemain.current === 0) {
+                console.log(myShipRemain.current, enemyShipRemain.current);
                 let winnerSide;
                 if (myShipRemain.current === 0) {
-                    winnerSide = (playerSide === "Left" ? "Right" : "Left");
+                    winnerSide = playerSide === "Left" ? "Right" : "Left";
                 } else {
                     winnerSide = playerSide;
                 }
@@ -122,8 +123,8 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
                 setContainersAnimation({
                     gameContainer: {
                         animation: "backOutDown 1s forwards",
-                    }
-                })
+                    },
+                });
                 setTimeout(() => changePhrase(GAMEOVER), 1000);
             }
         });
@@ -206,12 +207,20 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
                     setContainersAnimation(() => {
                         requestToStartNewTimer();
                         cellClickable.current = true;
-                        notifContent.current =
-                            playersName[currentGameTurn] + "'s Turn";
+                        if (currentGameTurn === playerSide) {
+                            notifContent.current = "YOUR TURN TO ATTACK!";
+                        } else {
+                            let enemySide =
+                                playerSide === "Left" ? "Right" : "Left";
+                            notifContent.current = `${playersName[enemySide]} IS ATTACKING YOUR BOARD!`;
+                        }
                         setBoardSide(boardSide === "Left" ? "Right" : "Left");
                         return {
                             board: {
                                 animation: "rollIn 1s forwards",
+                            },
+                            timer: {
+                                animation: "flipInX 1s forwards",
                             },
                             gameTurnNotif: {
                                 animation: "flipInX 1s forwards",
@@ -225,6 +234,9 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
                             board: {
                                 animation: "rollOut 1s forwards",
                             },
+                            timer: {
+                                animation: "flipOutX 1s forwards",
+                            },
                             gameTurnNotif: {
                                 animation: "flipOutX 1s forwards",
                             },
@@ -233,14 +245,25 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
                             setContainersAnimation(() => {
                                 requestToStartNewTimer();
                                 cellClickable.current = true;
-                                notifContent.current =
-                                    playersName[currentGameTurn] + "'s Turn";
+                                if (currentGameTurn === playerSide) {
+                                    notifContent.current =
+                                        "YOUR TURN TO ATTACK!";
+                                } else {
+                                    let enemySide =
+                                        playerSide === "Left"
+                                            ? "Right"
+                                            : "Left";
+                                    notifContent.current = `${playersName[enemySide]} IS ATTACKING YOUR BOARD!`;
+                                }
                                 setBoardSide(
                                     boardSide === "Left" ? "Right" : "Left"
                                 );
                                 return {
                                     board: {
                                         animation: "rollIn 1s forwards",
+                                    },
+                                    timer: {
+                                        animation: "flipInX 1s forwards",
                                     },
                                     gameTurnNotif: {
                                         animation: "flipInX 1s forwards",
@@ -266,7 +289,7 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
 
     return (
         <>
-            <div id="gameContainer" style = {containersAnimation.gameContainer}>
+            <div id="gameContainer" style={containersAnimation.gameContainer}>
                 <div className="barContainer">
                     <div
                         className="playerNameContainer"
@@ -276,7 +299,9 @@ export default function Ingame({ changePhrase, roomId, playerId, playerSide }) {
                     >
                         {playersName.Left}
                     </div>
-                    <div className="tracker">{timer}</div>
+                    <div className="tracker">
+                        <span style={containersAnimation.timer}>{timer}</span>
+                    </div>
                     <div
                         className="playerNameContainer"
                         style={

@@ -47,6 +47,7 @@ app.post("/joinRoom", (req, res) => {
     if (matchList[roomId].isEnoughPlayers()) {
         waitingRooms.dequeue(roomId);
     }
+
     res.json({
         roomId: roomId,
         playerId: playerId,
@@ -134,7 +135,6 @@ app.post("/getGameTurn", (req, res) => {
 
     res.json({
         turn: match.turn,
-        gameTimer: match.gameTimer,
     });
 });
 

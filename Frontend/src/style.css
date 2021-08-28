@@ -1,15 +1,19 @@
+@font-face {
+    font-family: 'Comic Sans MS';
+    src: url("./TextFont/comici.ttf");
+  }
+
 * {
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
-    font-family: "Comic Sans MS", "Comic Sans";
+    font-family: "Comic Sans MS";
     box-sizing: border-box;
 }
 
 body {
     height: 100vh;
-    background: url("http://lotofcolor.com/wp-content/uploads/2020/11/1920x1080.jpg")
-        no-repeat;
+    background: url("./image/landscape_background.png") no-repeat;
     background-size: cover;
 }
 
@@ -29,11 +33,12 @@ body {
     height: 100%;
     grid-template-areas:
         "name name name"
-        "nav nav play"
-        "infoBoard infoBoard play";
+        "how how play"
+        "infoBoard infoBoard play"
+        "footer footer footer";
 
     grid-template-columns: 35% 35% 30%;
-    grid-template-rows: auto auto 75%;
+    grid-template-rows: auto auto 70% 4%;
     animation: fadeIn 1s forwards;
 }
 
@@ -45,51 +50,44 @@ body {
     color: black;
 }
 
-#nav {
-    grid-area: nav;
+#how {
+    grid-area: how;
     display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 20px;
-    margin-bottom: 0px;
-    text-align: center;
-    font-size: 100%;
-    border: 2px solid black;
-    border-radius: 50px;
-    justify-content: space-around;
-    cursor: pointer;
-    opacity: 1;
-    word-wrap: break-word;
-}
-
-#nav > i {
-    margin-bottom: 0px;
+    border: 5px solid black;
+    border-radius: 20px;
+    background-color: orangered;
+    font-weight: bold;
     font-size: 5vh;
-}
-
-#nav > i:not(hover) {
-    opacity: 0.3;
-}
-
-#nav > i:hover {
-    opacity: 1;
 }
 
 #infoBoard {
     grid-area: infoBoard;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 20px;
-    padding-right: 50px;
-    padding-left: 50px;
+    margin-top: 0px;
+    padding: 20px;
     overflow: scroll;
-    background-color: lightblue;
+    background-color: royalblue;
     text-align: justify;
     font-size: 3vh;
-    border: 3px solid black;
+    border: 5px solid black;
     border-radius: 50px;
 }
 
-#infoBoard > h1 {
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 20px;
+#infoBoard > ul {
+    height: 100%;
+    list-style-type: none;
+}
+
+#infoBoard > ul > li > span {
+    background-color: black;
+    font-size: 120%;
+    font-weight: bold;
 }
 
 #play {
@@ -99,13 +97,18 @@ body {
     padding: 30px;
     font-size: 100%;
     flex-direction: column;
-    border: 3px solid black;
+    border: 5px solid black;
     border-radius: 30px;
 }
 
 #play > h1 {
     text-align: center;
     font-size: max(5vw, 5vh);
+}
+
+#play > img {
+    width: 100%;
+    height: 50%;
 }
 
 #play > input {
@@ -135,6 +138,43 @@ body {
     border: 5px solid black;
 }
 
+#footer {
+    grid-area: footer;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-weight: bold;
+    font-size: 2vh;
+    border-top: 5px solid black;
+    background-color: greenyellow
+}
+
+#contactsText {
+    width: 80%;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+#contactsText > div {
+    display: inline;
+    flex-grow: 0.1;
+}
+
+#contactsText > div > span {
+    margin: 5px;
+}
+
+#contactsLink {
+    width: 20%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#contactsLink > a {
+    color: black;
+}
 /* ---------------------------------------------------- Pregame & Ingame */
 
 #gameContainer {
@@ -177,6 +217,11 @@ body {
     border-right: 5px solid black;
     background-color: greenyellow;
     font-weight: bold;
+}
+
+.barContainer:nth-of-type(2) > div:nth-of-type(1) {
+    font-size: min(3vw, 3vh);
+    /* text-align: initial; */
 }
 
 .barContainer:nth-of-type(2) > div:nth-of-type(2) {
@@ -244,7 +289,6 @@ body {
 
 .popupInner > h1 {
     width: 100%;
-    /* height: 20%; */
     text-align: center;
     display: inline-block;
     position: relative;
@@ -252,9 +296,9 @@ body {
     line-height: 0.1em;
 }
 
-.popupInner > h1 > span { 
-    background-color: rgb(0, 255, 0); 
-    padding:0 10px; 
+.popupInner > h1 > span {
+    background-color: rgb(0, 255, 0);
+    padding: 0 10px;
 }
 
 .popupInner > p {
@@ -267,7 +311,6 @@ body {
 
 .popupInner > button {
     width: 50%;
-    /* height: 100%; */
     margin: 15px;
     padding: 10px;
     font-size: 200%;
@@ -284,24 +327,38 @@ body {
     color: white;
 }
 
-
 @media (orientation: portrait) {
     body {
-        background: url("https://wallpaperaccess.com/full/1155299.png")
-            no-repeat;
+        background: url("./image/portrait_background.png") no-repeat;
     }
+
     #Home {
         grid-template-areas:
             "name"
-            "nav"
+            "how"
             "infoBoard"
-            "play";
+            "play"
+            "footer";
         grid-template-columns: none;
-        grid-template-rows: 10% 10% 40% 40%;
+        grid-template-rows: 10% 10% 40% 50% 8%;
     }
+
     #gameName {
         font-size: 5vh;
     }
+
+    #footer {
+        font-size: 4vw;
+    }
+
+    #contactsText {
+        flex-direction: column;
+    }
+
+    #contactsLink {
+        flex-direction: column;
+    }
+
     .barContainer {
         width: 100%;
         height: 5%;
@@ -316,6 +373,7 @@ body {
         width: 100%;
         height: 50%;
     }
+
     .popupInner {
         width: 80%;
         height: 40%;
