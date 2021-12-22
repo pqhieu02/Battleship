@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const PORT = 8080;
+const PORT = 8081;
 
 app.use(cors());
 app.use(express.json());
@@ -17,7 +17,7 @@ let waitingRooms = new Queue();
 app.post("/getPlayerName", (req, res) => {
     let { roomId, side } = req.body;
     let match = matchList[roomId];
-    
+
     res.json({
         playerName: match.getPlayerNameBySide(side),
     });
@@ -26,11 +26,11 @@ app.post("/getPlayerName", (req, res) => {
 app.post("/getTimeStamp", (req, res) => {
     let { roomId } = req.body;
     let match = matchList[roomId];
-    
+
     res.json({
         timeStamp: match.timeStamp,
-    })
-})
+    });
+});
 
 // -------------------------------------------------------- Setup Stage
 
@@ -145,8 +145,8 @@ app.post("/getGameTimerAndStatus", (req, res) => {
     res.json({
         gameTimer: match.gameTimer,
         roomStatus: match.roomStatus,
-    })
-})
+    });
+});
 
 app.post("/stopTimer", (req, res) => {
     let { roomId } = req.body;
@@ -154,23 +154,23 @@ app.post("/stopTimer", (req, res) => {
 
     match.stopTimer();
 
-    res.json()
-})
+    res.json();
+});
 
 app.post("/startNewTimer", (req, res) => {
     let { roomId } = req.body;
     let match = matchList[roomId];
 
-    if (!match.timerItvId) { 
+    if (!match.timerItvId) {
         match.resetTimer();
         match.startTimer();
     }
 
-    res.json()
-})
+    res.json();
+});
 
 app.post("/controlGameTimer", (req, res) => {
-    let { roomId, playerId} = req.body;
+    let { roomId, playerId } = req.body;
     let match = matchList[roomId];
 
     match.players.forEach((player) => {
@@ -178,15 +178,15 @@ app.post("/controlGameTimer", (req, res) => {
             match.roomStatus = match.roomStatus === INGAME ? PAUSED : INGAME;
             if (match.roomStatus === PAUSED) {
                 match.stopTimer();
-            } 
+            }
             if (match.roomStatus === INGAME) {
                 match.startTimer();
             }
         }
-    })
+    });
 
     res.json();
-})
+});
 
 app.post("/getMyMap", (req, res) => {
     let { roomId, playerId } = req.body;
@@ -227,7 +227,7 @@ app.post("/setGameWinner", (req, res) => {
     match.roomStatus = winnerSide;
 
     res.json();
-})
+});
 
 app.post("/getWinnerName", (req, res) => {
     let { roomId } = req.body;
@@ -237,8 +237,8 @@ app.post("/getWinnerName", (req, res) => {
 
     res.json({
         playerName: playerName,
-    })
-})
+    });
+});
 
 //------------------------------------------------------------------------------
 app.listen(PORT, () => {
